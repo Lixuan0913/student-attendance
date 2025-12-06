@@ -20,5 +20,5 @@
 #include <iosteam>
 
 int main(){
-    cout << "Hello"
+    cout << "Hello";
 }
