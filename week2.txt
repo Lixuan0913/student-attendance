@@ -1,0 +1,9 @@
+week2
+3
+studentid
+name
+status
+1
+12345
+amira
+1

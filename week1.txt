@@ -1,0 +1,12 @@
+week1
+3
+student
+id
+status
+2
+amira
+12345
+1
+aisyah
+54321
+0
