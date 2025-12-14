@@ -18,10 +18,42 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 using namespace std;
 
-int main(){
-    string sheet_name;
+
+int main() {
+    string sheetName;
+    int numColumns;
+    string columnNames[10];
+
+    cout << " ===========================================" << endl;
+    cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
+    cout << " ===========================================" << endl << endl;
+
     cout << "Enter attendance sheet name: ";
-    cin >> sheet_name;
+    getline(cin, sheetName);
+    cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
+
+    // create number of columns
+    do {
+        cout << "Define number of columns (max 10): ";
+        cin >> numColumns;
+
+        if (numColumns < 1 || numColumns > 10) {
+            cout << "Please enter a number between 1 and 10.\n";
+        }
+    } while (numColumns < 1 || numColumns > 10);
+
+    cin.ignore(); // clear unwanted character
+
+    //create column names
+    for (int i = 0; i < numColumns; i++) {
+        cout << "Enter column " << (i + 1) << " name: ";
+        getline(cin, columnNames[i]);
+    }
+
+    cout << "\nSheet structure created successfully.\n";
+
+    return 0;
 }
