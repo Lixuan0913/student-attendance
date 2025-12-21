@@ -5,7 +5,7 @@
 // Tutorial Class: TT1L
 // Trimester: 2530
 // Member_1: 252UC243XL | AISYAH BINTI AHMAD HAWARI | AISYAH.AHMAD.HAWARI1@student.mmu.edu.my | 01110691624
-// Member_2: 252UC24216 | AMIRA SOFIA BINTI AZIZUL RAHMA | AMIRA.SOFIA.AZIZUL1@student.mmu.edu.my | 01156786588
+// Member_2: 252UC24216 | AMIRA SOFIA BINTI AZIZUL RAHMAN | AMIRA.SOFIA.AZIZUL1@student.mmu.edu.my | 01156786588
 // Member_3: 252UC241RN | ELLY MAZLIN BINTI MOHD AZMIR | ELLY MAZLIN BINTI MOHD AZMIR | 012662 3767
 // Member_4: 252UC242JW | YAP LI XUAN | yap.li.xuan1@student.mmu.edu.my | 0126371496
 // *********************************************************
@@ -21,8 +21,13 @@
 #include <string>
 using namespace std;
 
+void content(string);
+
 
 int main() {
+
+    ifstream inputFile;
+    ofstream outputFile;
     string sheetName;
     int numColumns;
     string columnNames[10];
@@ -36,7 +41,21 @@ int main() {
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
     // create number of columns
-    do {
+
+    outputFile.open(sheetName);
+    string text;
+
+    content(text);
+
+    outputFile << text;
+
+
+    return 0;
+}
+
+void content(int numColumns, string columnNames[10])
+{
+       do {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
 
@@ -53,7 +72,5 @@ int main() {
         getline(cin, columnNames[i]);
     }
 
-    cout << "\nSheet structure created successfully.\n";
-
-    return 0;
+    cout << "\nSheet structure created successfully.\n" <<endl;
 }
