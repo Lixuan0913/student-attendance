@@ -44,18 +44,11 @@ int main() {
 
     outputFile.open(sheetName);
     string text;
-
-    content(text);
+    cin >> text;
 
     outputFile << text;
 
-
-    return 0;
-}
-
-void content(int numColumns, string columnNames[10])
-{
-       do {
+    do {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
 
@@ -73,4 +66,8 @@ void content(int numColumns, string columnNames[10])
     }
 
     cout << "\nSheet structure created successfully.\n" <<endl;
+
+
+    return 0;
 }
+
