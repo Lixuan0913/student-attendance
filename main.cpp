@@ -23,9 +23,7 @@ using namespace std;
 
 void content(string);
 
-
 int main() {
-
     ifstream inputFile;
     ofstream outputFile;
     string sheetName;
@@ -38,16 +36,13 @@ int main() {
 
     cout << "Enter attendance sheet name: ";
     getline(cin, sheetName);
+
+    // Create the text file
+    outputFile.open(sheetName + ".txt");
+
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
-    // create number of columns
-
-    outputFile.open(sheetName);
-    string text;
-    cin >> text;
-
-    outputFile << text;
-
+    // Define number of columns
     do {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
@@ -57,16 +52,29 @@ int main() {
         }
     } while (numColumns < 1 || numColumns > 10);
 
-    cin.ignore(); // clear unwanted character
+    cin.ignore(); // clear newline character from buffer
 
-    //create column names
+    // Create column names
     for (int i = 0; i < numColumns; i++) {
         cout << "Enter column " << (i + 1) << " name: ";
         getline(cin, columnNames[i]);
     }
 
-    cout << "\nSheet structure created successfully.\n" <<endl;
+    // Write to the text file
+    outputFile << "Attendance Sheet: " << sheetName << "\n\n";
 
+    // Write column headers
+    for (int i = 0; i < numColumns; i++) {
+        outputFile << columnNames[i];
+        if (i < numColumns - 1) {
+            outputFile << "\t"; // Add tab between columns
+        }
+    }
+    outputFile << "\n";
+
+    outputFile.close();
+
+    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".txt'.\n";
 
     return 0;
 }
