@@ -42,7 +42,7 @@ int main() {
 
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
-    // Define number of columns
+    //number of columns
     do {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
@@ -52,7 +52,7 @@ int main() {
         }
     } while (numColumns < 1 || numColumns > 10);
 
-    cin.ignore(); // clear newline character from buffer
+    cin.ignore();
 
     // Create column names
     for (int i = 0; i < numColumns; i++) {
@@ -63,11 +63,11 @@ int main() {
     // Write to the text file
     outputFile << "Attendance Sheet: " << sheetName << "\n\n";
 
-    // Write column headers
+
     for (int i = 0; i < numColumns; i++) {
         outputFile << columnNames[i];
         if (i < numColumns - 1) {
-            outputFile << "\t"; // Add tab between columns
+            outputFile << "\t";
         }
     }
     outputFile << "\n";
