@@ -37,12 +37,12 @@ int main() {
     cout << "Enter attendance sheet name: ";
     getline(cin, sheetName);
 
-    // Create the text file
+    // create text file
     outputFile.open(sheetName + ".txt");
 
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
-    //number of columns
+    // create number of columns
     do {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
@@ -54,13 +54,13 @@ int main() {
 
     cin.ignore();
 
-    // Create column names
+    //create column names
     for (int i = 0; i < numColumns; i++) {
         cout << "Enter column " << (i + 1) << " name: ";
         getline(cin, columnNames[i]);
     }
 
-    // Write to the text file
+    //input in text file
     outputFile << "Attendance Sheet: " << sheetName << "\n\n";
 
 
