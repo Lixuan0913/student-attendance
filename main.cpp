@@ -42,7 +42,7 @@ int main() {
     getline(cin, sheetName);
 
     // create text file
-    outputFile.open(sheetName + ".txt");
+    outputFile.open(sheetName + ".csv");
 
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
@@ -77,7 +77,7 @@ int main() {
 
     outputFile.close();
 
-    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".txt'.\n";
+    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n";
 
     do{
     cout << "Do you want insert data?(y/n):\n";
@@ -103,7 +103,7 @@ void insertData(string sheetname){
    vector<string> columns;
    string line;
 
-   string filename = sheetname + ".txt";
+   string filename = sheetname + ".csv";
    ifstream inputFile(filename);
 
    if (!inputFile) {
@@ -111,7 +111,8 @@ void insertData(string sheetname){
 
     }
 
-    getline(inputFile, line);
+    getline(inputFile,line);
+
     inputFile.close();
 
     //Put all header to an vector
@@ -121,9 +122,6 @@ void insertData(string sheetname){
         //
         string col = (commaFound!=1)? line.substr(0,commaFound) : line;
 
-        while (!col.empty() && col[0] == ' ') col.erase(0, 1);
-        while (!col.empty() && col[col.size()-1] == ' ') col.pop_back();
-
         columns.push_back(col);
 
         line = (commaFound != -1) ? line.substr(commaFound + 1) : "";
@@ -131,7 +129,7 @@ void insertData(string sheetname){
     }
 
 
-   cout << "\n-------------------------------------------\n";
+  cout << "\n-------------------------------------------\n";
    cout << "Insert New Attendance Row\n";
    cout << "-------------------------------------------\n";
 
@@ -182,7 +180,10 @@ void insertData(string sheetname){
    outputfile.close();
 
  cout << "\nRow inserted successfully.\n";
+ //For debug
     /*for(int i = 0; i < size; i++)
-        cout << columns[i] << ": " << userInput[i] << endl;* for debug use/
+        cout << columns[i] << ": " << userInput[i] << endl;*/
+
 }
+
 
