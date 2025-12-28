@@ -41,12 +41,7 @@ int main() {
         cout << "Enter attendance sheet name: ";
         getline(cin, sheetName);
 
-       if(filesystem:exist)
-
-    }
-
     // create text file
-
     outputFile.open(sheetName + ".csv");
 
 
