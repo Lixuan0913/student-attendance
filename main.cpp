@@ -20,14 +20,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <limits>
+#include <filesystem>
 using namespace std;
 
 void content(string);
 void insertData(string);
 
 int main() {
-    ifstream inputFile;
     ofstream outputFile;
     string sheetName;
     int numColumns;
@@ -40,11 +39,18 @@ int main() {
     cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
     cout << " ===========================================" << endl << endl;
 
-    cout << "Enter attendance sheet name: ";
-    getline(cin, sheetName);
+    while(true){
+        cout << "Enter attendance sheet name: ";
+        getline(cin, sheetName);
+
+       if(filesystem:exist)
+
+    }
 
     // create text file
+
     outputFile.open(sheetName + ".csv");
+
 
     cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
 
@@ -150,18 +156,22 @@ int main() {
     return 0;
 }
 
+// Function to insert a new row of attendance into a CSV file
 void insertData(string sheetname){
-   vector<string> columns;
+
+   vector<string> columns; // Stores column names extracted from header
    string line;
 
    string filename = sheetname + ".csv";
    ifstream inputFile(filename);
 
+    // Check if file exists / can be opened
    if (!inputFile) {
         cout << "Error opening file!" << endl;
 
     }
 
+    // Read the first line of file (header)
     getline(inputFile,line);
 
     inputFile.close();
@@ -170,11 +180,13 @@ void insertData(string sheetname){
     while(!line.empty()){
         // Seperate the value by checking comma
         int commaFound = line.find(",");
-        //
+
         string col = (commaFound!=1)? line.substr(0,commaFound) : line;
 
+        //Push column name into array columns
         columns.push_back(col);
 
+        // Remove the extracted column part from line
         line = (commaFound != -1) ? line.substr(commaFound + 1) : "";
 
     }
@@ -184,20 +196,26 @@ void insertData(string sheetname){
    cout << "Insert New Attendance Row\n";
    cout << "-------------------------------------------\n";
 
-   int size = columns.size();
+   int size = columns.size(); // Number of columns
    string userInput[size];
 
-   ofstream outputfile(filename, ios::app);
+   ofstream outputfile(filename, ios::app);  // Open file in append mode
 
-   if(!outputfile) cout << "Error opening file for writing!\n";
+   if(!outputfile)
+      cout << "Error opening file for writing!\n";
 
-   cin.ignore();
+   cin.ignore(); // Clear leftover newline from input buffer
 
 
+   // Loop every columns
    for (int i = 0; i < size; i++) {
        while(true){
 
-            if(columns[i] == "STATUS" || columns[i] == "status" || columns[i] == "Status")
+            // Condition for Status
+            bool isStatus = (columns[i] == "STATUS" || columns[i] == "status" || columns[i] == "Status");
+
+            // Check whether the current column is Status
+            if(isStatus)
                 cout << "Enter " << columns[i] << " (Present: 1, Absent: 0): ";
 
             else
@@ -205,35 +223,43 @@ void insertData(string sheetname){
 
             getline(cin, userInput[i]);
 
-            // Check if StudentID are digits
+            // Validation for StudentID are digits
             if(i == 0){
                bool valid = true;
+               // Check for every number
                for(char c : userInput[i]){
+                    // Condition for non-digit number
                     if(!isdigit(c))
                        valid = false;
                }
 
-            if(!valid){
-                cout << "Invalid INT value. Please enter a number." << endl;
-                continue;
+              if(!valid){
+                  // Print error statement and re-enter for the first value
+                  cout << "Invalid INT value. Please enter a number.\n" << endl;
+                  continue;
+              }
             }
 
+            //Validation for Status are digits
+            if(isStatus){
+                if(userInput[i]!= "0" && userInput[i]!= "1"){
+                    cout << "Status only accept either 0(Absent) or 1(Present). Please re-enter" << endl;
+                    continue;
+                }
             }
 
-        break;
+        break; // Exit validation loop
     }
     //Insert value into file
     outputfile << userInput[i];
     if(i != size - 1) outputfile << ",";
 
    }
-   outputfile << "\n";
-   outputfile.close();
+
+   outputfile << "\n"; // New row completed
+   outputfile.close(); // Save file
 
  cout << "\nRow inserted successfully.\n";
- //For debug
-    /*for(int i = 0; i < size; i++)
-        cout << columns[i] << ": " << userInput[i] << endl;*/
 
 }
 
