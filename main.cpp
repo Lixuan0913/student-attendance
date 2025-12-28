@@ -33,6 +33,8 @@ int main() {
     int numColumns;
     string columnNames[10];
     char choice;
+    string sheet;
+    char view;
 
     cout << " ===========================================" << endl;
     cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
@@ -86,7 +88,7 @@ int main() {
       if(choice == 'y' || choice == 'Y')
          insertData(sheetName);
       else if(choice == 'n' || choice == 'N'){
-        cout << "Goodbye!\n";
+       // cout << "Goodbye!\n";
         break;
       }
 
@@ -95,6 +97,55 @@ int main() {
 
     }while(true);
 
+    do {
+        string columnNames;
+        string line;
+
+        cout << "\nDo you want to view attendance sheet in csv mode?(y/n):" << endl;
+        cin >> view;
+        if (view == 'y' || view == 'Y')
+        {
+            inputFile.open(sheetName + ".csv", ios::in);
+            if (inputFile)
+            {
+
+
+            cout << "\n\n-------------------------------------------" << endl;
+            cout << "View Attendance Sheet(CSV Mode)" << endl;
+            cout << "-------------------------------------------\n" << endl;
+
+            getline(inputFile,columnNames);
+            cout << columnNames << endl;
+            while (getline(inputFile,line))
+            {
+                cout << line << endl;
+            }
+            inputFile.close();
+            cout << "End of file reading." << endl;
+            break;
+            }
+            else
+            {
+               cout << "ERROR: Cannot open file." << endl;
+               continue;
+            }
+
+        }
+        else if (view == 'n' || view == 'N')
+        {
+            cout << "Goodbye!\n";
+            break;
+        }
+        else
+        {
+            cout << "Please enter either y or n\n";
+            cin.clear();
+            cin.ignore();
+        }
+
+
+        }
+        while(true);
 
     return 0;
 }
