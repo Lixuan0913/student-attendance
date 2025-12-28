@@ -27,6 +27,7 @@ void content(string);
 void insertData(string);
 
 int main() {
+    ifstream inputFile;
     ofstream outputFile;
     string sheetName;
     int numColumns;
@@ -39,9 +40,8 @@ int main() {
     cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
     cout << " ===========================================" << endl << endl;
 
-    while(true){
-        cout << "Enter attendance sheet name: ";
-        getline(cin, sheetName);
+    cout << "Enter attendance sheet name: ";
+    getline(cin, sheetName);
 
     // create text file
     outputFile.open(sheetName + ".csv");
@@ -145,8 +145,7 @@ int main() {
         }
 
 
-        }
-        while(true);
+    } while(true);
 
     return 0;
 }
