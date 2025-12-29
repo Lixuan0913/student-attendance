@@ -25,13 +25,11 @@ using namespace std;
 
 void content(string);
 void insertData(string);
+string createAttendanceSheet();
 
 int main() {
     ifstream inputFile;
-    ofstream outputFile;
     string sheetName;
-    int numColumns;
-    string columnNames[10];
     char choice;
     string sheet;
     char view;
@@ -40,47 +38,7 @@ int main() {
     cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
     cout << " ===========================================" << endl << endl;
 
-    cout << "Enter attendance sheet name: ";
-    getline(cin, sheetName);
-
-    // create text file
-    outputFile.open(sheetName + ".csv");
-
-
-    cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
-
-    // create number of columns
-    do {
-        cout << "Define number of columns (max 10): ";
-        cin >> numColumns;
-
-        if (numColumns < 1 || numColumns > 10) {
-            cout << "Please enter a number between 1 and 10.\n";
-        }
-    } while (numColumns < 1 || numColumns > 10);
-
-    cin.ignore();
-
-    //create column names
-    for (int i = 0; i < numColumns; i++) {
-        cout << "Enter column " << (i + 1) << " name: ";
-        getline(cin, columnNames[i]);
-    }
-
-    //input in text file
-
-
-    for (int i = 0; i < numColumns; i++) {
-        outputFile << columnNames[i];
-        if (i < numColumns - 1) {
-            outputFile << ",";
-        }
-    }
-    outputFile << "\n";
-
-    outputFile.close();
-
-    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n";
+    sheetName = createAttendanceSheet();
 
     do{
     cout << "Do you want insert data?(y/n):\n";
@@ -147,7 +105,69 @@ int main() {
 
     } while(true);
 
+    cout << "\n-------------------------------------------\n";
+    cout << "End of Milestone 1 Output\n";
+    cout << "-------------------------------------------\n";
     return 0;
+}
+
+
+string createAttendanceSheet() {
+    ofstream outputFile;
+    string sheetName;
+    int numColumns;
+    string columnNames[10];
+
+    while (true) {
+        cout << "Enter attendance sheet name: ";
+        getline(cin, sheetName);
+
+        // Check if file exists
+        ifstream f(sheetName + ".csv");
+        if (f.good()) {
+            cout << "Error: The file \"" << sheetName << ".csv\" already exists. Please try another name.\n\n";
+        }
+        else {
+            // File does not exist, safe to open a new file
+            outputFile.open(sheetName + ".csv");
+            break;
+        }
+    }
+
+    cout << "Attendance sheet \"" << sheetName << "\" created successfully.\n\n";
+
+    // Create number of columns
+    do {
+        cout << "Define number of columns (max 10): ";
+        cin >> numColumns;
+
+        if (numColumns < 1 || numColumns > 10) {
+            cout << "Please enter a number between 1 and 10.\n";
+        }
+    } while (numColumns < 1 || numColumns > 10);
+
+    cin.ignore(); // Clear buffer
+
+    // Create column names
+    for (int i = 0; i < numColumns; i++) {
+        cout << "Enter column " << (i + 1) << " name: ";
+        getline(cin, columnNames[i]);
+    }
+
+    // Input in text file
+    for (int i = 0; i < numColumns; i++) {
+        outputFile << columnNames[i];
+        if (i < numColumns - 1) {
+            outputFile << ",";
+        }
+    }
+    outputFile << "\n";
+    outputFile.close();
+
+    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n";
+
+    //return back the sheetName to main
+    return sheetName;
 }
 
 // Function to insert a new row of attendance into a CSV file
