@@ -29,7 +29,6 @@ string createAttendanceSheet();
 void viewCSV(string);
 
 int main() {
-    ifstream inputFile;
     string sheetName;
     char choice;
     string sheet;
@@ -48,7 +47,7 @@ int main() {
       if(choice == 'y' || choice == 'Y')
          insertData(sheetName);
       else if(choice == 'n' || choice == 'N'){
-       // cout << "Goodbye!\n";
+
         break;
       }
 
@@ -58,14 +57,11 @@ int main() {
     }while(true);
 
     do {
-        /*string columnNames;
-        string line;*/
-
         cout << "\nDo you want to view attendance sheet in csv mode?(y/n):" << endl;
         cin >> view;
         if (view == 'y' || view == 'Y')
         {
-            viewCSV(sheetName);
+            viewCSV(sheetName); //call viewCSV function
             break;
 
         }
@@ -271,7 +267,6 @@ void viewCSV(string sheetName)
 {
     ifstream inputFile;
     string columnNames;
-    //string sheetName;
     string line;
     inputFile.open(sheetName + ".csv", ios::in);
     if (inputFile)
@@ -289,7 +284,6 @@ void viewCSV(string sheetName)
             cout << line << endl;
         }
     inputFile.close();
-    cout << "End of file reading." << endl;
     }
     else
     {
