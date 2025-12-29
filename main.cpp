@@ -29,6 +29,7 @@ string createAttendanceSheet();
 void viewCSV(string);
 
 int main() {
+    ifstream fileCheck;
     string sheetName = "";
     string choice;
 
@@ -53,10 +54,23 @@ int main() {
 
         // INSERT ATTENDANCE DATA
         else if (choice == "2"){
-             if (sheetName == "") {
-                 cout << "\n !!PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
+             cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
+             getline(cin, sheetName);
+
+             // Parse filename and csv together
+             string FileName = sheetName + ".csv";
+
+             // Try open the file
+             fileCheck.open(FileName,ios::in);
+
+             // If file exist then open file or ask them go to create file
+             if (fileCheck.is_open()) {
+                 fileCheck.close(); // Close the file
+                 insertData(FileName); // Pass file name to insertData
+
              } else {
-                insertData(sheetName);
+               cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl; // Statement if file does not exist
+               fileCheck.clear();// Clear fileCheck
              }
         }
 
@@ -158,13 +172,12 @@ string createAttendanceSheet() {
 }
 
 // Function to insert a new row of attendance into a CSV file
-void insertData(string sheetname){
+void insertData(string fileName){
 
     vector<string> columns; // Stores column names extracted from header
     string line;
 
-    string filename = sheetname + ".csv";
-    ifstream inputFile(filename);
+    ifstream inputFile(fileName);
 
     // Check if file exists / can be opened
     if (!inputFile) {
@@ -198,7 +211,7 @@ void insertData(string sheetname){
     int size = columns.size(); // Number of columns
     string userInput[size];
 
-    ofstream outputfile(filename, ios::app);  // Open file in append mode
+    ofstream outputfile(fileName, ios::app);  // Open file in append mode
 
     if(!outputfile)
         cout << "Error opening file for writing!\n";
