@@ -6,7 +6,7 @@
 // Trimester: 2530
 // Member_1: 252UC243XL | AISYAH BINTI AHMAD HAWARI | AISYAH.AHMAD.HAWARI1@student.mmu.edu.my | 01110691624
 // Member_2: 252UC24216 | AMIRA SOFIA BINTI AZIZUL RAHMAN | AMIRA.SOFIA.AZIZUL1@student.mmu.edu.my | 01156786588
-// Member_3: 252UC241RN | ELLY MAZLIN BINTI MOHD AZMIR | ELLY MAZLIN BINTI MOHD AZMIR | 012662 3767
+// Member_3: 252UC241RN | ELLY MAZLIN BINTI MOHD AZMIR | ELLY MAZLIN BINTI MOHD AZMIR | 0126623767
 // Member_4: 252UC242JW | YAP LI XUAN | yap.li.xuan1@student.mmu.edu.my | 0126371496
 // *********************************************************
 // Task Distribution
@@ -29,61 +29,62 @@ string createAttendanceSheet();
 void viewCSV(string);
 
 int main() {
-    string sheetName;
-    char choice;
-    string sheet;
-    char view;
+    string sheetName = "";
+    string choice;
 
-    cout << " ===========================================" << endl;
-    cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
-    cout << " ===========================================" << endl << endl;
-
-    sheetName = createAttendanceSheet();
-
-    do{
-    cout << "Do you want insert data?(y/n):\n";
-    cin >> choice;
-
-      if(choice == 'y' || choice == 'Y')
-         insertData(sheetName);
-      else if(choice == 'n' || choice == 'N'){
-
-        break;
-      }
-
-      else
-         cout << "Please enter either y or n\n";
-
-    }while(true);
-
+    // MENU LOOP
     do {
-        cout << "\nDo you want to view attendance sheet in csv mode?(y/n):" << endl;
-        cin >> view;
-        if (view == 'y' || view == 'Y')
-        {
-            viewCSV(sheetName); //call viewCSV function
-            break;
+        cout << "===========================================" << endl;
+        cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
+        cout << "===========================================" << endl << endl;
+        cout << "1. Create Attendance Sheet" << endl;
+        cout << "2. Insert Attendance Data" << endl;
+        cout << "3. View Attendance Sheet (CSV)" << endl;
+        cout << "4. Exit" << endl;
+        cout << "===========================================" << endl << endl;
+        cout << "Enter your choice: " << endl;
 
-        }
-        else if (view == 'n' || view == 'N')
-        {
-            cout << "Goodbye!\n";
-            break;
-        }
-        else
-        {
-            cout << "Please enter either y or n\n";
-            cin.clear();
-            cin.ignore();
+        getline(cin, choice);
+
+        // CREATE ATTENDANCE SHEET
+        if (choice == "1") {
+            sheetName = createAttendanceSheet();
         }
 
+        // INSERT ATTENDANCE DATA
+        else if (choice == "2"){
+             if (sheetName == "") {
+                 cout << "\n !!PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
+             } else {
+                insertData(sheetName);
+             }
+        }
 
-    } while(true);
+        // VIEW ATTENDANCE SHEET (CSV)
+        else if (choice == "3"){
+             if (sheetName == ""){
+                 cout << "\n !!PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
+             } else {
+                 viewCSV(sheetName);
+             }
+        }
 
-    cout << "\n-------------------------------------------\n";
-    cout << "End of Milestone 1 Output\n";
-    cout << "-------------------------------------------\n";
-    return 0;
+        // EXIT
+        else if (choice == "4"){
+             cout << "\n Goodbye!\n" << endl;
+        }
+
+        // DEFAULT INVALID (NUMBER OTHER THAN 1-4)
+        else {
+             cout << "\n Invalid choice. Please enter a number (1-4) \n" << endl;
+        }
+
+    } while (choice != "4");
+        cout << "===========================================" << endl;
+        cout << "End of Milestone 1 Output" << endl;
+        cout << "===========================================" << endl;
+
+        return 0;
 }
 
 
@@ -116,11 +117,11 @@ string createAttendanceSheet() {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
 
-         if (cin.fail()) {
-              cout << "Invalid input! Please enter a number only.\n\n";
-              cin.clear();                // Clear error flag
-              cin.ignore(1000,'\n');     // Remove invalid input from buffer
-             continue;
+        if (cin.fail()) {
+            cout << "Invalid input! Please enter a number only.\n\n";
+            cin.clear();                // Clear error flag
+            cin.ignore(1000,'\n');     // Remove invalid input from buffer
+            continue;
         }
 
         else if (numColumns < 1 || numColumns > 10) {
@@ -132,7 +133,7 @@ string createAttendanceSheet() {
 
     } while (numColumns < 1 || numColumns > 10);
 
-    cin.ignore(); // Clear buffer
+        cin.ignore(); // Clear buffer
 
     // Create column names
     for (int i = 0; i < numColumns; i++) {
@@ -159,16 +160,15 @@ string createAttendanceSheet() {
 // Function to insert a new row of attendance into a CSV file
 void insertData(string sheetname){
 
-   vector<string> columns; // Stores column names extracted from header
-   string line;
+    vector<string> columns; // Stores column names extracted from header
+    string line;
 
-   string filename = sheetname + ".csv";
-   ifstream inputFile(filename);
+    string filename = sheetname + ".csv";
+    ifstream inputFile(filename);
 
     // Check if file exists / can be opened
-   if (!inputFile) {
+    if (!inputFile) {
         cout << "Error opening file!" << endl;
-
     }
 
     // Read the first line of file (header)
@@ -191,25 +191,23 @@ void insertData(string sheetname){
 
     }
 
+    cout << "\n-------------------------------------------\n";
+    cout << "Insert New Attendance Row\n";
+    cout << "-------------------------------------------\n";
 
-  cout << "\n-------------------------------------------\n";
-   cout << "Insert New Attendance Row\n";
-   cout << "-------------------------------------------\n";
+    int size = columns.size(); // Number of columns
+    string userInput[size];
 
-   int size = columns.size(); // Number of columns
-   string userInput[size];
+    ofstream outputfile(filename, ios::app);  // Open file in append mode
 
-   ofstream outputfile(filename, ios::app);  // Open file in append mode
+    if(!outputfile)
+        cout << "Error opening file for writing!\n";
 
-   if(!outputfile)
-      cout << "Error opening file for writing!\n";
+    cin.ignore(); // Clear leftover newline from input buffer
 
-   cin.ignore(); // Clear leftover newline from input buffer
-
-
-   // Loop every columns
-   for (int i = 0; i < size; i++) {
-       while(true){
+    // Loop every columns
+    for (int i = 0; i < size; i++) {
+        while(true){
 
             // Condition for Status
             bool isStatus = (columns[i] == "STATUS" || columns[i] == "status" || columns[i] == "Status");
@@ -219,25 +217,24 @@ void insertData(string sheetname){
                 cout << "Enter " << columns[i] << " (Present: 1, Absent: 0): ";
 
             else
-              cout << "Enter " << columns[i] << ":";
+                cout << "Enter " << columns[i] << ":";
 
             getline(cin, userInput[i]);
 
             // Validation for StudentID are digits
             if(i == 0){
-               bool valid = true;
-               // Check for every number
-               for(char c : userInput[i]){
+                bool valid = true;
+                // Check for every number
+                for(char c : userInput[i]){
                     // Condition for non-digit number
                     if(!isdigit(c))
-                       valid = false;
-               }
-
-              if(!valid){
-                  // Print error statement and re-enter for the first value
-                  cout << "Invalid INT value. Please enter a number.\n" << endl;
-                  continue;
-              }
+                        valid = false;
+                }
+                if(!valid){
+                    // Print error statement and re-enter for the first value
+                    cout << "Invalid INT value. Please enter a number.\n" << endl;
+                    continue;
+                }
             }
 
             //Validation for Status are digits
@@ -247,20 +244,17 @@ void insertData(string sheetname){
                     continue;
                 }
             }
+            break; // Exit validation loop
+        }
+        //Insert value into file
+        outputfile << userInput[i];
+        if(i != size - 1) outputfile << ",";
 
-        break; // Exit validation loop
     }
-    //Insert value into file
-    outputfile << userInput[i];
-    if(i != size - 1) outputfile << ",";
+    outputfile << "\n"; // New row completed
+    outputfile.close(); // Save file
 
-   }
-
-   outputfile << "\n"; // New row completed
-   outputfile.close(); // Save file
-
- cout << "\nRow inserted successfully.\n";
-
+    cout << "\nRow inserted successfully.\n";
 }
 
 void viewCSV(string sheetName)
@@ -272,13 +266,12 @@ void viewCSV(string sheetName)
     if (inputFile)
     {
 
+        cout << "\n\n-------------------------------------------" << endl;
+        cout << "View Attendance Sheet(CSV Mode)" << endl;
+        cout << "-------------------------------------------\n" << endl;
 
-    cout << "\n\n-------------------------------------------" << endl;
-    cout << "View Attendance Sheet(CSV Mode)" << endl;
-    cout << "-------------------------------------------\n" << endl;
-
-    getline(inputFile,columnNames);
-    cout << columnNames << endl;
+        getline(inputFile,columnNames);
+        cout << columnNames << endl;
         while (getline(inputFile,line))
         {
             cout << line << endl;
@@ -287,7 +280,7 @@ void viewCSV(string sheetName)
     }
     else
     {
-       cout << "ERROR: Cannot open file." << endl;
+        cout << "ERROR: Cannot open file." << endl;
 
     }
 }
