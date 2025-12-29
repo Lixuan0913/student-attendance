@@ -76,10 +76,23 @@ int main() {
 
         // VIEW ATTENDANCE SHEET (CSV)
         else if (choice == "3"){
-             if (sheetName == ""){
-                 cout << "\n !!PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
+             cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
+             getline(cin, sheetName);
+
+             // Parse filename and csv together
+             string FileName = sheetName + ".csv";
+
+             // Try open the file
+             fileCheck.open(FileName,ios::in);
+
+             // If file exist then open file or ask them go to create file
+             if (fileCheck.is_open()) {
+                 fileCheck.close(); // Close the file
+                 viewCSV(FileName); // Pass file name to insertData
+
              } else {
-                 viewCSV(sheetName);
+               cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl; // Statement if file does not exist
+               fileCheck.clear();// Clear fileCheck
              }
         }
 
@@ -268,12 +281,12 @@ void insertData(string fileName){
     cout << "\nRow inserted successfully.\n";
 }
 
-void viewCSV(string sheetName)
+void viewCSV(string fileName)
 {
     ifstream inputFile;
     string columnNames;
     string line;
-    inputFile.open(sheetName + ".csv", ios::in);
+    inputFile.open(fileName, ios::in);
     if (inputFile)
     {
 
