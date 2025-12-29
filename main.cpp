@@ -66,30 +66,6 @@ int main() {
         if (view == 'y' || view == 'Y')
         {
             viewCSV(sheetName);
-            /*inputFile.open(sheetName + ".csv", ios::in);
-            if (inputFile)
-            {
-
-
-            cout << "\n\n-------------------------------------------" << endl;
-            cout << "View Attendance Sheet(CSV Mode)" << endl;
-            cout << "-------------------------------------------\n" << endl;
-
-            getline(inputFile,columnNames);
-            cout << columnNames << endl;
-            while (getline(inputFile,line))
-            {
-                cout << line << endl;
-            }
-            inputFile.close();
-            cout << "End of file reading." << endl;
-            break;
-            }
-            else
-            {
-               cout << "ERROR: Cannot open file." << endl;
-               continue;
-            }*/
             break;
 
         }
@@ -144,9 +120,20 @@ string createAttendanceSheet() {
         cout << "Define number of columns (max 10): ";
         cin >> numColumns;
 
-        if (numColumns < 1 || numColumns > 10) {
-            cout << "Please enter a number between 1 and 10.\n";
+         if (cin.fail()) {
+              cout << "Invalid input! Please enter a number only.\n\n";
+              cin.clear();                // Clear error flag
+              cin.ignore(1000,'\n');     // Remove invalid input from buffer
+             continue;
         }
+
+        else if (numColumns < 1 || numColumns > 10) {
+            cout << "Please enter a number between 1 and 10.\n";
+            continue;
+        }
+
+        break;
+
     } while (numColumns < 1 || numColumns > 10);
 
     cin.ignore(); // Clear buffer
