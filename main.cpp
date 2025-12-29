@@ -203,8 +203,6 @@ void insertData(string sheetname){
     if(!outputfile)
         cout << "Error opening file for writing!\n";
 
-    cin.ignore(); // Clear leftover newline from input buffer
-
     // Loop every columns
     for (int i = 0; i < size; i++) {
         while(true){
@@ -276,6 +274,8 @@ void viewCSV(string sheetName)
         {
             cout << line << endl;
         }
+
+        cout << "\n";
     inputFile.close();
     }
     else
