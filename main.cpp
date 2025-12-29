@@ -26,6 +26,7 @@ using namespace std;
 void content(string);
 void insertData(string);
 string createAttendanceSheet();
+void viewCSV(string);
 
 int main() {
     ifstream inputFile;
@@ -57,14 +58,15 @@ int main() {
     }while(true);
 
     do {
-        string columnNames;
-        string line;
+        /*string columnNames;
+        string line;*/
 
         cout << "\nDo you want to view attendance sheet in csv mode?(y/n):" << endl;
         cin >> view;
         if (view == 'y' || view == 'Y')
         {
-            inputFile.open(sheetName + ".csv", ios::in);
+            viewCSV(sheetName);
+            /*inputFile.open(sheetName + ".csv", ios::in);
             if (inputFile)
             {
 
@@ -87,7 +89,8 @@ int main() {
             {
                cout << "ERROR: Cannot open file." << endl;
                continue;
-            }
+            }*/
+            break;
 
         }
         else if (view == 'n' || view == 'N')
@@ -277,4 +280,33 @@ void insertData(string sheetname){
 
 }
 
+void viewCSV(string sheetName)
+{
+    ifstream inputFile;
+    string columnNames;
+    //string sheetName;
+    string line;
+    inputFile.open(sheetName + ".csv", ios::in);
+    if (inputFile)
+    {
 
+
+    cout << "\n\n-------------------------------------------" << endl;
+    cout << "View Attendance Sheet(CSV Mode)" << endl;
+    cout << "-------------------------------------------\n" << endl;
+
+    getline(inputFile,columnNames);
+    cout << columnNames << endl;
+        while (getline(inputFile,line))
+        {
+            cout << line << endl;
+        }
+    inputFile.close();
+    cout << "End of file reading." << endl;
+    }
+    else
+    {
+       cout << "ERROR: Cannot open file." << endl;
+
+    }
+}
