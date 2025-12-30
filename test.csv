@@ -1,0 +1,3 @@
+student id,student name,status
+INTEGER,TEXT,INTEGER
+55533,amira sofia,1
