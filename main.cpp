@@ -120,6 +120,7 @@ string createAttendanceSheet() {
     string sheetName;
     int numColumns;
     string columnNames[10];
+    string columnTypes[10];
 
     while (true) {
         cout << "Enter attendance sheet name: ";
@@ -162,13 +163,36 @@ string createAttendanceSheet() {
 
         cin.ignore(); // Clear buffer
 
-    // Create column names
+    //Create column names
     for (int i = 0; i < numColumns; i++) {
-        cout << "Enter column " << (i + 1) << " name: ";
+        cout << "\nColumn " << (i + 1) << ":\n";
+
+        cout << "  Enter column name: ";
         getline(cin, columnNames[i]);
+
+        // Get column data type
+        cout << "  Choose data type for '" << columnNames[i] << "':\n";
+        cout << "  1. Text\n";
+        cout << "  2. Integer\n";
+        cout << "  Enter choice (1 or 2): ";
+
+        string typeChoice;
+        getline(cin, typeChoice);
+
+        //Store data type
+        if (typeChoice == "1") {
+            columnTypes[i] = "TEXT";
+        } else if (typeChoice == "2") {
+            columnTypes[i] = "INTEGER";
+        } else {
+            cout << "  Invalid choice! Defaulting to Text.\n";
+            columnTypes[i] = "TEXT";
+        }
+
+        cout << "  Column '" << columnNames[i] << "' set to " << columnTypes[i] << " type.\n";
     }
 
-    // Input in text file
+    // Input in text file and column names
     for (int i = 0; i < numColumns; i++) {
         outputFile << columnNames[i];
         if (i < numColumns - 1) {
@@ -176,6 +200,15 @@ string createAttendanceSheet() {
         }
     }
     outputFile << "\n";
+
+    for (int i = 0; i < numColumns; i++) {
+        outputFile << columnTypes[i];
+        if (i < numColumns - 1) {
+            outputFile << ",";
+        }
+    }
+    outputFile << "\n";
+
     outputFile.close();
 
     cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n";
@@ -184,10 +217,11 @@ string createAttendanceSheet() {
     return sheetName;
 }
 
-// Function to insert a new row of attendance into a CSV file
+//Function to insert a new row of attendance into a CSV file
 void insertData(string fileName){
 
     vector<string> columns; // Stores column names extracted from header
+    vector<string> columnTypes; //Stores column data types
     string line;
 
     ifstream inputFile(fileName);
@@ -197,24 +231,32 @@ void insertData(string fileName){
         cout << "Error opening file!" << endl;
     }
 
-    // Read the first line of file (header)
-    getline(inputFile,line);
+    //Read the first line of the file(header)
+    getline(inputFile, line);
+    string headerLine = line; // Save header
+
+    //Read the second line (column types)
+    getline(inputFile, line);
+    string typeLine = line; // Save types line
 
     inputFile.close();
 
-    //Put all header to an vector
-    while(!line.empty()){
-        // Seperate the value by checking comma
-        int commaFound = line.find(",");
-
-        string col = (commaFound!=1)? line.substr(0,commaFound) : line;
-
-        //Push column name into array columns
+    //Parse column names from header line
+    string header = headerLine;
+    while(!header.empty()){
+        int commaFound = header.find(",");
+        string col = (commaFound != -1) ? header.substr(0, commaFound) : header;
         columns.push_back(col);
+        header = (commaFound != -1) ? header.substr(commaFound + 1) : "";
+    }
 
-        // Remove the extracted column part from line
-        line = (commaFound != -1) ? line.substr(commaFound + 1) : "";
-
+    //Parse column types from type line
+    string types = typeLine;
+    while(!types.empty()){
+        int commaFound = types.find(",");
+        string type = (commaFound != -1) ? types.substr(0, commaFound) : types;
+        columnTypes.push_back(type);
+        types = (commaFound != -1) ? types.substr(commaFound + 1) : "";
     }
 
     cout << "\n-------------------------------------------\n";
@@ -232,30 +274,62 @@ void insertData(string fileName){
     // Loop every columns
     for (int i = 0; i < size; i++) {
         while(true){
-
             // Condition for Status
             bool isStatus = (columns[i] == "STATUS" || columns[i] == "status" || columns[i] == "Status");
 
-            // Check whether the current column is Status
+            //Check column type
+            bool isIntegerType = (columnTypes[i] == "INTEGER");
+
+            // Check whether the current column is Status and display prompt based on type
             if(isStatus)
                 cout << "Enter " << columns[i] << " (Present: 1, Absent: 0): ";
-
+            else if(isIntegerType)
+                cout << "Enter " << columns[i] << " (Integer): ";
             else
-                cout << "Enter " << columns[i] << ":";
+                cout << "Enter " << columns[i] << " (Text): ";
 
             getline(cin, userInput[i]);
 
-            // Validation for StudentID are digits
-            if(i == 0){
+            //Validation based on data type
+            if(isIntegerType){
                 bool valid = true;
-                // Check for every number
                 for(char c : userInput[i]){
-                    // Condition for non-digit number
+                    if(!isdigit(c) && c != '-') {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                //Check for valid integer format
+                if(!userInput[i].empty() && userInput[i] != "-"){
+                    // Check if it's a valid integer
+                    for(size_t j = 0; j < userInput[i].length(); j++){
+                        if(j == 0 && userInput[i][j] == '-') continue; // Allow minus sign at start
+                        if(!isdigit(userInput[i][j])) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                } else {
+                    valid = false;
+                }
+
+                if(!valid){
+                    // Print error statement and re-enter for the first value
+                    cout << "Invalid input. Please enter an integer value.\n";
+                    continue;
+                }
+            }
+
+            // Validation for StudentID (first column)
+            if(i == 0 && !isIntegerType){
+                // Only apply if not already validated as integer type
+                bool valid = true;
+                for(char c : userInput[i]){
                     if(!isdigit(c))
                         valid = false;
                 }
                 if(!valid){
-                    // Print error statement and re-enter for the first value
                     cout << "Invalid INT value. Please enter a number.\n" << endl;
                     continue;
                 }
@@ -289,24 +363,26 @@ void viewCSV(string fileName)
     inputFile.open(fileName, ios::in);
     if (inputFile)
     {
-
         cout << "\n\n-------------------------------------------" << endl;
         cout << "View Attendance Sheet(CSV Mode)" << endl;
         cout << "-------------------------------------------\n" << endl;
 
-        getline(inputFile,columnNames);
-        cout << columnNames << endl;
-        while (getline(inputFile,line))
+        getline(inputFile, columnNames);
+        cout << "COLUMNS: " << columnNames << endl;
+
+        getline(inputFile, line);
+
+        cout << "DATA:\n";
+        while (getline(inputFile, line))
         {
             cout << line << endl;
         }
 
         cout << "\n";
-    inputFile.close();
+        inputFile.close();
     }
     else
     {
         cout << "ERROR: Cannot open file." << endl;
-
     }
 }
