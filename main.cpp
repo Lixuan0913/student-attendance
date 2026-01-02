@@ -165,9 +165,8 @@ string createAttendanceSheet() {
 
     //Create column names
     for (int i = 0; i < numColumns; i++) {
-        cout << "\nColumn " << (i + 1) << ":\n";
 
-        cout << "  Enter column name: ";
+        cout << "Enter column " <<  (i+1) << " name: ";
         getline(cin, columnNames[i]);
 
         // Get column data type
@@ -226,11 +225,6 @@ void insertData(string fileName){
 
     ifstream inputFile(fileName);
 
-    // Check if file exists / can be opened
-    if (!inputFile) {
-        cout << "Error opening file!" << endl;
-    }
-
     //Read the first line of the file(header)
     getline(inputFile, line);
     string headerLine = line; // Save header
@@ -268,9 +262,6 @@ void insertData(string fileName){
 
     ofstream outputfile(fileName, ios::app);  // Open file in append mode
 
-    if(!outputfile)
-        cout << "Error opening file for writing!\n";
-
     // Loop every columns
     for (int i = 0; i < size; i++) {
         while(true){
@@ -291,59 +282,43 @@ void insertData(string fileName){
             getline(cin, userInput[i]);
 
             //Validation based on data type
-            if(isIntegerType){
-                bool valid = true;
-                for(char c : userInput[i]){
-                    if(!isdigit(c) && c != '-') {
-                        valid = false;
-                        break;
-                    }
+            if(isStatus){
+                if(userInput[i] != "0" && userInput[i] != "1"){
+                    cout << "Status only accepts either 0 (Absent) or 1 (Present). Please re-enter.\n" << endl;
+                    continue; // Restart while loop for this column
                 }
+            }
+            // 2. Validation for INTEGER types (e.g., Student ID)
+            else if(isIntegerType){
+                bool valid = true;
 
-                //Check for valid integer format
-                if(!userInput[i].empty() && userInput[i] != "-"){
-                    // Check if it's a valid integer
-                    for(size_t j = 0; j < userInput[i].length(); j++){
-                        if(j == 0 && userInput[i][j] == '-') continue; // Allow minus sign at start
-                        if(!isdigit(userInput[i][j])) {
+                if(userInput[i].empty()){
+                    valid = false;
+                } else {
+                    // Check if every character is a digit (no minus sign allowed)
+                    for(char c : userInput[i]){
+                        if(!isdigit(c)) {
                             valid = false;
                             break;
                         }
                     }
-                } else {
-                    valid = false;
                 }
 
                 if(!valid){
-                    // Print error statement and re-enter for the first value
-                    cout << "Invalid input. Please enter an integer value.\n";
+                    cout << "Invalid INT value. Please enter a number." << endl;
+                    continue; // Restart while loop for this column
+                }
+            }
+            // 3. Validation for TEXT types (e.g., Student Name)
+            else {
+                if(userInput[i].empty()){
+                    cout << "Input cannot be empty. Please enter text.\n" << endl;
                     continue;
                 }
+                // If it's text and not empty, it is accepted automatically
             }
 
-            // Validation for StudentID (first column)
-            if(i == 0 && !isIntegerType){
-                // Only apply if not already validated as integer type
-                bool valid = true;
-                for(char c : userInput[i]){
-                    if(!isdigit(c))
-                        valid = false;
-                }
-                if(!valid){
-                    cout << "Invalid INT value. Please enter a number.\n" << endl;
-                    continue;
-                }
-            }
-
-            //Validation for Status are digits
-            if(isStatus){
-                if(userInput[i]!= "0" && userInput[i]!= "1"){
-                    cout << "Status only accept either 0(Absent) or 1(Present). Please re-enter" << endl;
-                    continue;
-                }
-            }
-            break; // Exit validation loop
-        }
+            break;
         //Insert value into file
         outputfile << userInput[i];
         if(i != size - 1) outputfile << ",";
@@ -352,7 +327,9 @@ void insertData(string fileName){
     outputfile << "\n"; // New row completed
     outputfile.close(); // Save file
 
-    cout << "\nRow inserted successfully.\n";
+
+ }
+ cout << "\nRow inserted successfully.\n";
 }
 
 void viewCSV(string fileName)
@@ -368,11 +345,11 @@ void viewCSV(string fileName)
         cout << "-------------------------------------------\n" << endl;
 
         getline(inputFile, columnNames);
-        cout << "COLUMNS: " << columnNames << endl;
+        cout << columnNames << endl;
 
         getline(inputFile, line);
 
-        cout << "DATA:\n";
+        //cout << "DATA:\n";
         while (getline(inputFile, line))
         {
             cout << line << endl;
