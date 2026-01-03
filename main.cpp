@@ -6,14 +6,14 @@
 // Trimester: 2530
 // Member_1: 252UC243XL | AISYAH BINTI AHMAD HAWARI | AISYAH.AHMAD.HAWARI1@student.mmu.edu.my | 01110691624
 // Member_2: 252UC24216 | AMIRA SOFIA BINTI AZIZUL RAHMAN | AMIRA.SOFIA.AZIZUL1@student.mmu.edu.my | 01156786588
-// Member_3: 252UC241RN | ELLY MAZLIN BINTI MOHD AZMIR | ELLY MAZLIN BINTI MOHD AZMIR | 0126623767
+// Member_3: 252UC241RN | ELLY MAZLIN BINTI MOHD AZMIR | elly.mazlin.mohd1@student.mmu.edu.my| 0126623767
 // Member_4: 252UC242JW | YAP LI XUAN | yap.li.xuan1@student.mmu.edu.my | 0126371496
 // *********************************************************
 // Task Distribution
-// Member_1:
-// Member_2:
-// Member_3:
-// Member_4:
+// Member_1: viewCSV
+// Member_2: createAttendanceSheet
+// Member_3: flowchart and menu
+// Member_4: insertData
 // *********************************************************
 
 #include <fstream>
@@ -206,11 +206,11 @@ string createAttendanceSheet() {
             outputFile << ",";
         }
     }
-    outputFile << "\n";
+    outputFile << "\n";//Next line if loop finished
 
-    outputFile.close();
+    outputFile.close(); // Close the file
 
-    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n";
+    cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n"; // Indicate create attendance sheet successfully
 
     //return back the sheetName to main
     return sheetName;
@@ -239,8 +239,8 @@ void insertData(string fileName){
     string header = headerLine;
     while(!header.empty()){
         int commaFound = header.find(",");
-        string col = (commaFound != -1) ? header.substr(0, commaFound) : header;
-        columns.push_back(col);
+        string col = (commaFound != -1) ? header.substr(0, commaFound) : header;//remove comma
+        columns.push_back(col);//push into vector columns
         header = (commaFound != -1) ? header.substr(commaFound + 1) : "";
     }
 
@@ -248,8 +248,8 @@ void insertData(string fileName){
     string types = typeLine;
     while(!types.empty()){
         int commaFound = types.find(",");
-        string type = (commaFound != -1) ? types.substr(0, commaFound) : types;
-        columnTypes.push_back(type);
+        string type = (commaFound != -1) ? types.substr(0, commaFound) : types;//remove comma
+        columnTypes.push_back(type);//push into vector columnType
         types = (commaFound != -1) ? types.substr(commaFound + 1) : "";
     }
 
@@ -281,14 +281,14 @@ void insertData(string fileName){
 
             getline(cin, userInput[i]);
 
-            //Validation based on data type
+            //Validation for status
             if(isStatus){
                 if(userInput[i] != "0" && userInput[i] != "1"){
                     cout << "Status only accepts either 0 (Absent) or 1 (Present). Please re-enter.\n" << endl;
                     continue; // Restart while loop for this column
                 }
             }
-            // 2. Validation for INTEGER types (e.g., Student ID)
+            //Validation for INTEGER types (e.g., Student ID)
             else if(isIntegerType){
                 bool valid = true;
 
@@ -305,11 +305,11 @@ void insertData(string fileName){
                 }
 
                 if(!valid){
-                    cout << "Invalid INT value. Please enter a number." << endl;
+                    cout << "Invalid INT value. Please enter an integer value." << endl;
                     continue; // Restart while loop for this column
                 }
             }
-            // 3. Validation for TEXT types (e.g., Student Name)
+            //Validation for TEXT types (e.g., Student Name)
             else {
                 if(userInput[i].empty()){
                     cout << "Input cannot be empty. Please enter text.\n" << endl;
@@ -329,7 +329,7 @@ void insertData(string fileName){
 
 
  }
- cout << "\nRow inserted successfully.\n";
+ cout << "\nRow inserted successfully.\n"; // Indicate insert row successfully
 }
 
 void viewCSV(string fileName)
@@ -349,14 +349,13 @@ void viewCSV(string fileName)
 
         getline(inputFile, line);
 
-        //cout << "DATA:\n";
-        while (getline(inputFile, line))
+        while (getline(inputFile, line)) //Loop through every line
         {
             cout << line << endl;
         }
 
-        cout << "\n";
-        inputFile.close();
+        cout << "\n"; // Go to next line
+        inputFile.close();//Close inputfilee
     }
     else
     {
