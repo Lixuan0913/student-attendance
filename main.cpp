@@ -22,21 +22,54 @@
 #include <vector>
 #include <filesystem>
 using namespace std;
+namespace fs = filesystem;
 
 void content(string);
 void insertData(string);
-string createAttendanceSheet();
+string createAttendanceSheet(string &);
 void viewCSV(string);
 
 int main() {
     ifstream fileCheck;
-    string sheetName = "";
-    string choice;
+    string choice, termName,sheetName;
 
-    // MENU LOOP
+    cout << "===========================================\n";
+    cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 2  \n";
+    cout << "===========================================\n\n";
+
+    cout << "Create School Term (Database)\n";
+    cout << "-------------------------------------------\n";
+
+    cout << "Enter term name: ";
+    getline(cin,termName);
+
+    if (fs::exists(termName)) {
+      cout << "Database \"" << termName << "\" already exists. Using existing database.\n";
+    }
+    else {
+       fs::create_directory(termName);
+       cout << "Database \"" << termName << "\" created.\n";
+    }
+
+    cout << "\nReading attendance data from file...\n";
+
+    bool csvFound = true;
+
+    for (const auto& entry : fs::directory_iterator(termName)) {
+       if (entry.path().extension() == ".csv") {
+          csvFound = true;
+          cout << "\nSuccessfully loaded: " << entry.path().filename().string() << endl;
+           viewCSV(entry.path().string());
+         }
+     }
+
+     if (!csvFound){
+        cout << "No attendance sheet found in this term.\n";
+     }
+
     do {
         cout << "===========================================" << endl;
-        cout << "  STUDENT ATTENDANCE TRACKER - MILESTONE 1 " << endl;
+        cout << "  MENU " << endl;
         cout << "===========================================" << endl << endl;
         cout << "1. Create Attendance Sheet" << endl;
         cout << "2. Insert Attendance Data" << endl;
@@ -49,7 +82,7 @@ int main() {
 
         // CREATE ATTENDANCE SHEET
         if (choice == "1") {
-            sheetName = createAttendanceSheet();
+            sheetName = createAttendanceSheet(termName);
         }
 
         // INSERT ATTENDANCE DATA
@@ -58,7 +91,7 @@ int main() {
              getline(cin, sheetName);
 
              // Parse filename and csv together
-             string FileName = sheetName + ".csv";
+             string FileName = termName + "/" + sheetName + ".csv";
 
              // Try open the file
              fileCheck.open(FileName,ios::in);
@@ -80,7 +113,7 @@ int main() {
              getline(cin, sheetName);
 
              // Parse filename and csv together
-             string FileName = sheetName + ".csv";
+             string FileName = termName + "/" + sheetName + ".csv";
 
              // Try open the file
              fileCheck.open(FileName,ios::in);
@@ -108,14 +141,14 @@ int main() {
 
     } while (choice != "4");
         cout << "===========================================" << endl;
-        cout << "End of Milestone 1 Output" << endl;
+        cout << "End of Milestone 2 Output" << endl;
         cout << "===========================================" << endl;
 
         return 0;
 }
 
 
-string createAttendanceSheet() {
+string createAttendanceSheet(string &termName) {
     ofstream outputFile;
     string sheetName;
     int numColumns;
@@ -126,14 +159,15 @@ string createAttendanceSheet() {
         cout << "Enter attendance sheet name: ";
         getline(cin, sheetName);
 
+        string filepath = termName + "/" + sheetName + ".csv";
         // Check if file exists
-        ifstream f(sheetName + ".csv");
+        ifstream f(filepath);
         if (f.good()) {
             cout << "Error: The file \"" << sheetName << ".csv\" already exists. Please try another name.\n\n";
         }
         else {
             // File does not exist, safe to open a new file
-            outputFile.open(sheetName + ".csv");
+            outputFile.open(filepath);
             break;
         }
     }
@@ -318,18 +352,17 @@ void insertData(string fileName){
                 // If it's text and not empty, it is accepted automatically
             }
 
-            break;
         //Insert value into file
-        outputfile << userInput[i];
-        if(i != size - 1) outputfile << ",";
+         outputfile << userInput[i];
+        if (i != size - 1) outputfile << ",";
 
+        break; // ONLY exits while(true)
     }
+}
     outputfile << "\n"; // New row completed
     outputfile.close(); // Save file
 
-
- }
- cout << "\nRow inserted successfully.\n"; // Indicate insert row successfully
+   cout << "\nRow inserted successfully.\n"; // Indicate insert row successfully
 }
 
 void viewCSV(string fileName)
@@ -341,7 +374,7 @@ void viewCSV(string fileName)
     if (inputFile)
     {
         cout << "\n\n-------------------------------------------" << endl;
-        cout << "View Attendance Sheet(CSV Mode)" << endl;
+        cout << "Current Attendance Sheet" << endl;
         cout << "-------------------------------------------\n" << endl;
 
         getline(inputFile, columnNames);
