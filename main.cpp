@@ -30,8 +30,9 @@ string createAttendanceSheet(string &);
 void viewCSV(string);
 
 int main() {
-    ifstream fileCheck;
-    string choice, termName,sheetName;
+    ifstream file;
+    ofstream fileCreate;
+    string choice, termName,sheetName,txt_file,currentLine,fileName;
 
     cout << "===========================================\n";
     cout << "   STUDENT ATTENDANCE TRACKER - MILESTONE 2  \n";
@@ -43,29 +44,51 @@ int main() {
     cout << "Enter term name: ";
     getline(cin,termName);
 
+    txt_file = termName + "/" + termName + ".txt";
+
     if (fs::exists(termName)) {
       cout << "Database \"" << termName << "\" already exists. Using existing database.\n";
     }
     else {
        fs::create_directory(termName);
        cout << "Database \"" << termName << "\" created.\n";
+       fileCreate.open(txt_file);
+
+       if (fileCreate.is_open()) {
+           cout << "Text file created successfully.\n";
+           fileCreate.close();
+       } else {
+           cout << "Error: Could not create the text file.\n";
+       }
+
     }
 
-    cout << "\nReading attendance data from file...\n";
+    bool isEmpty = true;
+    cout << "Reading attendance data from file...\n";
 
-    bool csvFound = true;
+    file.clear();
+    file.open(txt_file);
+    if (file.is_open()) {
+        while (getline(file, currentLine)) {
+            isEmpty = false;
+            cout << currentLine << endl;
+        }
+        file.close();
+    }
 
-    for (const auto& entry : fs::directory_iterator(termName)) {
-       if (entry.path().extension() == ".csv") {
-          csvFound = true;
-          cout << "\nSuccessfully loaded: " << entry.path().filename().string() << endl;
-           viewCSV(entry.path().string());
-         }
-     }
+    if (isEmpty) {
+        cout << "There is no CSV file in the term.\n";
+    }
 
-     if (!csvFound){
-        cout << "No attendance sheet found in this term.\n";
-     }
+    else{
+        cout << "Which file you would like to open?\n";
+        getline(cin,sheetName);
+        fileName= termName + "/" + sheetName + ".csv";
+        viewCSV(fileName);
+    }
+
+    cout << "---------------------------------\n\n";
+
 
     do {
         cout << "===========================================" << endl;
@@ -85,8 +108,8 @@ int main() {
             sheetName = createAttendanceSheet(termName);
         }
 
-        // INSERT ATTENDANCE DATA
-        else if (choice == "2"){
+        // INSERT ATTENDANCE DATA AND VIEW ATTENDANCE SHEET
+        else if (choice == "2" || choice == "3"){
              cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
              getline(cin, sheetName);
 
@@ -94,39 +117,20 @@ int main() {
              string FileName = termName + "/" + sheetName + ".csv";
 
              // Try open the file
-             fileCheck.open(FileName,ios::in);
+             file.open(FileName,ios::in);
 
              // If file exist then open file or ask them go to create file
-             if (fileCheck.is_open()) {
-                 fileCheck.close(); // Close the file
-                 insertData(FileName); // Pass file name to insertData
+             if (file.is_open()) {
+                 if (choice == "2")
+                    insertData(FileName);
 
-             } else {
-               cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl; // Statement if file does not exist
-               fileCheck.clear();// Clear fileCheck
-             }
-        }
+                 else
+                 // VIEW ATTENDANCE SHEET (CSV)
+                    viewCSV(FileName);
 
-        // VIEW ATTENDANCE SHEET (CSV)
-        else if (choice == "3"){
-             cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
-             getline(cin, sheetName);
-
-             // Parse filename and csv together
-             string FileName = termName + "/" + sheetName + ".csv";
-
-             // Try open the file
-             fileCheck.open(FileName,ios::in);
-
-             // If file exist then open file or ask them go to create file
-             if (fileCheck.is_open()) {
-                 fileCheck.close(); // Close the file
-                 viewCSV(FileName); // Pass file name to insertData
-
-             } else {
-               cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl; // Statement if file does not exist
-               fileCheck.clear();// Clear fileCheck
-             }
+            } else {
+                cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
+            }
         }
 
         // EXIT
@@ -143,7 +147,6 @@ int main() {
         cout << "===========================================" << endl;
         cout << "End of Milestone 2 Output" << endl;
         cout << "===========================================" << endl;
-
         return 0;
 }
 
@@ -242,9 +245,19 @@ string createAttendanceSheet(string &termName) {
     }
     outputFile << "\n";//Next line if loop finished
 
+
     outputFile.close(); // Close the file
 
     cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n"; // Indicate create attendance sheet successfully
+
+    string text_filepath = termName + "/" + termName + ".txt";
+    outputFile.open(text_filepath, ios::app);
+    if (outputFile.is_open()) {
+        outputFile << sheetName << ".csv\n";
+        outputFile.close(); // Close it again when done
+    } else {
+        cout << "Error: Could not update the term text file.\n";
+    }
 
     //return back the sheetName to main
     return sheetName;
