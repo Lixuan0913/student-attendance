@@ -28,6 +28,7 @@ void content(string);
 void insertData(string);
 string createAttendanceSheet(string &);
 void viewCSV(string);
+void deleteRow(string);
 
 int main() {
     ifstream file;
@@ -97,7 +98,8 @@ int main() {
         cout << "1. Create Attendance Sheet" << endl;
         cout << "2. Insert Attendance Data" << endl;
         cout << "3. View Attendance Sheet (CSV)" << endl;
-        cout << "4. Exit" << endl;
+        cout << "5. Delete Attendance Row"<< endl;
+        cout << "6. Exit" << endl;
         cout << "===========================================" << endl << endl;
         cout << "Enter your choice: " << endl;
 
@@ -109,7 +111,7 @@ int main() {
         }
 
         // INSERT ATTENDANCE DATA AND VIEW ATTENDANCE SHEET
-        else if (choice == "2" || choice == "3"){
+        else if (choice == "2" || choice == "3" || choice == "5"){
              cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
              getline(cin, sheetName);
 
@@ -124,9 +126,14 @@ int main() {
                  if (choice == "2")
                     insertData(FileName);
 
-                 else
+                 else if (choice == "3")
                  // VIEW ATTENDANCE SHEET (CSV)
                     viewCSV(FileName);
+
+                 else if (choice == "5")
+                 //Delete row from attendance sheet
+                    deleteRow(FileName);
+
 
             } else {
                 cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
@@ -134,7 +141,7 @@ int main() {
         }
 
         // EXIT
-        else if (choice == "4"){
+        else if (choice == "6"){
              cout << "\n Goodbye!\n" << endl;
         }
 
@@ -143,7 +150,7 @@ int main() {
              cout << "\n Invalid choice. Please enter a number (1-4) \n" << endl;
         }
 
-    } while (choice != "4");
+    } while (choice != "6");
         cout << "===========================================" << endl;
         cout << "End of Milestone 2 Output" << endl;
         cout << "===========================================" << endl;
@@ -408,3 +415,92 @@ void viewCSV(string fileName)
         cout << "ERROR: Cannot open file." << endl;
     }
 }
+
+void deleteRow(string fileName)
+{
+    ifstream inputFile(fileName);
+    vector<string> allLines;
+    string line;
+
+    while (getline(inputFile, line))//Read all lines from file
+    {
+        allLines.push_back(line);
+    }
+    inputFile.close();
+
+    if (allLines.size() <= 2)//Not including title row and data type row
+    {
+        cout << "\nNo data rows to delete.\n" << endl;
+        return;
+    }
+
+    string studentIDToDelete; //Ask for student id to delete
+    cout << "\nEnter StudentID to delete: ";
+    getline(cin, studentIDToDelete);
+
+    int rowIndexToDelete = -1;
+
+    for (int i = 2; i < allLines.size(); i++)//Search for student id
+    {
+        string currentRow = allLines[i];
+        vector<string> rowData;
+
+        string tempRow = currentRow;//Split current row by commas
+        while(!tempRow.empty())
+        {
+            int commaPos = tempRow.find(",");
+            string value = (commaPos != -1) ? tempRow.substr(0, commaPos) : tempRow;
+
+            while (!value.empty() && value[0] == ' ')//Delete unwanted space in front
+            {
+                value = value.substr(1);
+            }
+            while (!value.empty() && value[value.length()-1] == ' ')//Delete unwanted space at back
+            {
+                value = value.substr(0, value.length()-1);
+            }
+
+            rowData.push_back(value);
+            tempRow = (commaPos != -1) ? tempRow.substr(commaPos + 1) : "";
+        }
+
+        bool found = false;//Check if student id exists
+        for (int j = 0; j < rowData.size(); j++)
+        {
+            if (rowData[j] == studentIDToDelete)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            rowIndexToDelete = i;
+            break;
+        }
+    }
+
+    if (rowIndexToDelete == -1)//If student id not found
+    {
+        cout << "\nStudent ID '" << studentIDToDelete << "' not found.\n" << endl;
+        return;
+    }
+
+    allLines.erase(allLines.begin() + rowIndexToDelete);//Delete row containing student id
+    ofstream outputFile(fileName);//Write all remaining rows back to file
+    for (int i = 0; i < allLines.size(); i++)
+    {
+        outputFile << allLines[i];
+        if (i < allLines.size() -1)
+        {
+            outputFile << "\n";
+        }
+    }
+    outputFile.close();
+    cout << "\nRow deleted succesfully." << endl;
+    cout << "\nUpdated Sheet:" << endl;
+    viewCSV(fileName);//Display updated sheet
+
+}
+
