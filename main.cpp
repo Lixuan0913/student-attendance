@@ -54,7 +54,7 @@ int main() {
         }
         fileCreate.close();
     }
-    cout << "Database/" + termName + "\created and loaded";
+    cout << "Database " + termName + " created and loaded\n\n";
 
     bool isEmpty = true;
     cout << "Reading attendance data from file...\n";
