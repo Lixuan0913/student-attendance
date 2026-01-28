@@ -109,6 +109,7 @@ int main() {
 
              // If file exist then open file or ask them go to create file
              if (file.is_open()) {
+                file.close();
                  if (choice == "2")
                     insertData(FileName);
 
