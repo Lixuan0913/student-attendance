@@ -1,0 +1,4 @@
+studentid,name,status
+INTEGER,TEXT,INTEGER
+1001,Aina,1
+1002,Risa,1

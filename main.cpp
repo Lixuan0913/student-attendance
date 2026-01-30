@@ -29,6 +29,7 @@ void insertData(string);
 string createAttendanceSheet(string &);
 void viewCSV(string);
 void deleteRow(string);
+void updateRow(string);
 
 int main() {
     ifstream file;
@@ -84,6 +85,7 @@ int main() {
         cout << "1. Create Attendance Sheet" << endl;
         cout << "2. Insert Attendance Data" << endl;
         cout << "3. View Attendance Sheet (CSV)" << endl;
+        cout << "4. Update Attendance Row" << endl;
         cout << "5. Delete Attendance Row"<< endl;
         cout << "6. Exit" << endl;
         cout << "===========================================" << endl << endl;
@@ -97,7 +99,7 @@ int main() {
         }
 
         // INSERT ATTENDANCE DATA AND VIEW ATTENDANCE SHEET
-        else if (choice == "2" || choice == "3" || choice == "5"){
+        else if (choice == "2" || choice == "3" || choice == "4" || choice == "5"){
              cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
              getline(cin, sheetName);
 
@@ -116,6 +118,10 @@ int main() {
                  else if (choice == "3")
                  // VIEW ATTENDANCE SHEET (CSV)
                     viewCSV(FileName);
+
+                 else if (choice == "4")
+                // update attendance sheet
+                    updateRow(FileName);
 
                  else if (choice == "5")
                  //Delete row from attendance sheet
@@ -403,7 +409,7 @@ void viewCSV(string fileName)
     }
 }
 
-void deleteRow(string fileName)
+void deleteRow(string fileName) // update
 {
     while (true)
     {
@@ -491,3 +497,143 @@ void deleteRow(string fileName)
 
 }
 
+//update attendance status
+void updateRow(string fileName) {
+    cout << "\n-------------------------------------------\n";
+    cout << "Update Attendance Row\n";
+    cout << "-------------------------------------------\n";
+
+    ifstream inputFile(fileName);
+    vector<string> allLines;
+    string line;
+
+    while (getline(inputFile, line)) {
+        allLines.push_back(line);
+    }
+    inputFile.close();
+
+    if (allLines.size() <= 2) {
+        cout << "\nNo data rows to update.\n" << endl;
+        return;
+    }
+
+    string studentID;
+    cout << "Enter StudentID to update: ";
+    getline(cin, studentID);
+
+    bool found = false;
+    int rowIndex = -1;
+    vector<string> rowData;
+
+    for (int i = 2; i < allLines.size(); i++) {
+        string currentRow = allLines[i];
+        vector<string> tempData;
+
+        string tempRow = currentRow;
+        while (!tempRow.empty()) {
+            int commaPos = tempRow.find(",");
+            string value = (commaPos != -1) ? tempRow.substr(0, commaPos) : tempRow;
+
+            while (!value.empty() && value[0] == ' ') {
+                value = value.substr(1);
+            }
+            while (!value.empty() && value[value.length()-1] == ' ') {
+                value = value.substr(0, value.length()-1);
+            }
+
+            tempData.push_back(value);
+            tempRow = (commaPos != -1) ? tempRow.substr(commaPos + 1) : "";
+        }
+
+        if (tempData.size() > 0 && tempData[0] == studentID) {
+            found = true;
+            rowIndex = i;
+            rowData = tempData;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "\nStudent ID '" << studentID << "' not found.\n" << endl;
+        return;
+    }
+
+    string header = allLines[0];
+    vector<string> columnNames;
+
+    string tempHeader = header;
+    while (!tempHeader.empty()) {
+        int commaPos = tempHeader.find(",");
+        string colName = (commaPos != -1) ? tempHeader.substr(0, commaPos) : tempHeader;
+
+        while (!colName.empty() && colName[0] == ' ') {
+            colName = colName.substr(1);
+        }
+        while (!colName.empty() && colName[colName.length()-1] == ' ') {
+            colName = colName.substr(0, colName.length()-1);
+        }
+
+        columnNames.push_back(colName);
+        tempHeader = (commaPos != -1) ? tempHeader.substr(commaPos + 1) : "";
+    }
+
+    int statusColumnIndex = -1;
+    for (int i = 0; i < columnNames.size(); i++) {
+        string upperName = columnNames[i];
+        for (char &c : upperName) c = toupper(c);
+        if (upperName == "STATUS") {
+            statusColumnIndex = i;
+            break;
+        }
+    }
+
+    if (statusColumnIndex == -1) {
+        cout << "\nERROR: No STATUS column found in this file.\n";
+        return;
+    }
+
+    string currentStatus = "";
+    if (statusColumnIndex < rowData.size()) {
+        currentStatus = rowData[statusColumnIndex];
+    }
+
+    string newStatus;
+    cout << "Enter new status (0 for Absent, 1 for Present): ";
+    getline(cin, newStatus);
+
+    if (newStatus != "0" && newStatus != "1") {
+        cout << "Error: Status must be 0 (Absent) or 1 (Present).\n";
+        return;
+    }
+
+    rowData[statusColumnIndex] = newStatus;
+
+    string updatedRow;
+    for (int i = 0; i < rowData.size(); i++) {
+        updatedRow += rowData[i];
+        if (i != rowData.size() - 1) updatedRow += ",";
+    }
+
+    allLines[rowIndex] = updatedRow;
+
+    ofstream outputFile(fileName);
+    for (int i = 0; i < allLines.size(); i++) {
+        outputFile << allLines[i];
+        if (i != allLines.size() - 1) outputFile << "\n";
+    }
+    outputFile.close();
+
+    cout << "\nRow updated successfully.\n" << endl;
+    cout << "Updated Sheet:\n";
+
+    ifstream displayFile(fileName);
+    getline(displayFile, line);
+    cout << line << endl;
+
+    getline(displayFile, line);
+
+    while (getline(displayFile, line)) {
+        cout << line << endl;
+    }
+    displayFile.close();
+}
