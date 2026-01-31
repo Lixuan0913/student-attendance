@@ -30,6 +30,7 @@ string createAttendanceSheet(string &);
 void viewCSV(string);
 void deleteRow(string);
 void updateRow(string);
+void countRows(string);
 
 int main() {
     ifstream file;
@@ -87,7 +88,8 @@ int main() {
         cout << "3. View Attendance Sheet (CSV)" << endl;
         cout << "4. Update Attendance Row" << endl;
         cout << "5. Delete Attendance Row"<< endl;
-        cout << "6. Exit" << endl;
+        cout << "6. View Total Attendance Row"<< endl;
+        cout << "7. Exit" << endl;
         cout << "===========================================" << endl << endl;
         cout << "Enter your choice: " << endl;
 
@@ -99,7 +101,7 @@ int main() {
         }
 
         // INSERT ATTENDANCE DATA AND VIEW ATTENDANCE SHEET
-        else if (choice == "2" || choice == "3" || choice == "4" || choice == "5"){
+        else if (choice == "2" || choice == "3" || choice == "4" || choice == "5" || choice == "6"){
              cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
              getline(cin, sheetName);
 
@@ -127,6 +129,10 @@ int main() {
                  //Delete row from attendance sheet
                     deleteRow(FileName);
 
+                 else if (choice == "6")
+                 // view total attendance rows
+                    countRows(FileName);
+
 
             } else {
                 cout << "\n File does not exist. PLEASE CREATE ATTENDANCE SHEET FIRST!! \n" << endl;
@@ -134,16 +140,16 @@ int main() {
         }
 
         // EXIT
-        else if (choice == "6"){
+        else if (choice == "7"){
              cout << "\n Goodbye!\n" << endl;
         }
 
         // DEFAULT INVALID (NUMBER OTHER THAN 1-4)
         else {
-             cout << "\n Invalid choice. Please enter a number (1-4) \n" << endl;
+             cout << "\n Invalid choice. Please enter a number (1-7) \n" << endl;
         }
 
-    } while (choice != "6");
+    } while (choice != "7");
         cout << "===========================================" << endl;
         cout << "End of Milestone 2 Output" << endl;
         cout << "===========================================" << endl;
@@ -366,7 +372,7 @@ void insertData(string fileName){
             }
 
         //Insert value into file
-         outputfile << userInput[i];
+        outputfile << userInput[i];
         if (i != size - 1) outputfile << ",";
 
         break; // ONLY exits while(true)
@@ -375,7 +381,26 @@ void insertData(string fileName){
     outputfile << "\n"; // New row completed
     outputfile.close(); // Save file
 
-   cout << "\nRow inserted successfully.\n"; // Indicate insert row successfully
+    cout << "\nRow inserted successfully.\n"; // Indicate insert row successfully
+
+    // show total rows in attendance sheet
+    ifstream countFile(fileName);
+    int countRow = 0;
+
+    if (countFile){
+        getline(countFile, line); //skip 1st line (header)
+        getline(countFile, line); //skip 2nd line (column name)
+
+        while (getline(countFile, line)){
+            if (!line.empty()){
+                countRow++; //increase row count by 1
+            }
+        }
+        countFile.close();
+    }
+
+    cout << "Total rows in attendance sheet: " << countRow << endl;
+    cout << endl;
 }
 
 void viewCSV(string fileName)
@@ -401,7 +426,7 @@ void viewCSV(string fileName)
         }
 
         cout << "\n"; // Go to next line
-        inputFile.close();//Close inputfilee
+        inputFile.close();//Close inputfile
     }
     else
     {
@@ -489,7 +514,7 @@ void deleteRow(string fileName) // update
         }
 
         outputFile.close();
-        cout << "\nRow deleted succesfully." << endl;
+        cout << "\nRow deleted successfully." << endl;
         cout << "\nUpdated Sheet:" << endl;
         viewCSV(fileName);//Display updated sheet
         return;
@@ -636,4 +661,32 @@ void updateRow(string fileName) {
         cout << line << endl;
     }
     displayFile.close();
+}
+
+// count current rows
+void countRows(string fileName) {
+    ifstream inputFile(fileName);
+    string line;
+    int rowCount = 0;
+
+    if (inputFile) {
+        // skip the first two lines (header & column types)
+        getline(inputFile, line);
+        getline(inputFile, line);
+
+        // Count the remaining lines
+        while (getline(inputFile, line)) {
+            if (!line.empty()) { // only count if line not empty
+                rowCount++;
+            }
+        }
+
+        cout << "\n-------------------------------------------" << endl;
+        cout << "Total Attendance Records: " << rowCount << endl;
+        cout << "-------------------------------------------\n" << endl;
+
+        inputFile.close();
+    } else {
+        cout << "ERROR: Could not open file to count rows." << endl;
+    }
 }
