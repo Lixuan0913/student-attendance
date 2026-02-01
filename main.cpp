@@ -686,7 +686,5 @@ void countRows(string fileName) {
         cout << "-------------------------------------------\n" << endl;
 
         inputFile.close();
-    } else {
-        cout << "ERROR: Could not open file to count rows." << endl;
     }
 }
