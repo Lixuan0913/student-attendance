@@ -20,9 +20,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <filesystem>
 using namespace std;
-namespace fs = filesystem;
 
 void content(string);
 void insertData(string);
@@ -44,32 +42,44 @@ int main() {
     cout << "Create School Term (Database)\n";
     cout << "-------------------------------------------\n";
 
+   // Ask user to enter the term name
     cout << "Enter term name: ";
     getline(cin,termName);
 
+    // Try to open the term file
     file.open(termName);
+    // If file does not exist, create it
     if (!file.is_open()) {
         fileCreate.open(termName);
+
+        // Check if file creation failed
         if (!fileCreate.is_open()) {
             cout << "Failed to create file!\n";
             return 1;
+
         }
         fileCreate.close();
     }
+    // Notify user that the database is ready
     cout << "Database " + termName + " created and loaded\n\n";
 
+   // Flag to check whether the file is empty
     bool isEmpty = true;
     cout << "Reading attendance data from file...\n";
+
+    // Read and display each line in the file
     while (getline(file, currentLine)) {
         isEmpty = false;
         cout << "Successfully loaded: "+ currentLine << endl;
     }
     file.close();
 
+    // If file has no content
     if (isEmpty) {
         cout << "There is no CSV file in the term.\n";
     }
     else {
+        // Ask user which attendance sheet to open
         cout << "Which file would you like to open?\n";
         getline(cin, sheetName);
         fileName = sheetName + "_" + termName + ".csv";
@@ -100,7 +110,7 @@ int main() {
             sheetName = createAttendanceSheet(termName);
         }
 
-        // INSERT ATTENDANCE DATA AND VIEW ATTENDANCE SHEET
+        // INSERT / VIEW / UPDATE / DELETE / COUNT ATTENDANCE DATA
         else if (choice == "2" || choice == "3" || choice == "4" || choice == "5" || choice == "6"){
              cout << "Enter the attendance sheet name to open (e.g., attendance):\n";
              getline(cin, sheetName);
@@ -144,7 +154,7 @@ int main() {
              cout << "\n Goodbye!\n" << endl;
         }
 
-        // DEFAULT INVALID (NUMBER OTHER THAN 1-4)
+        // DEFAULT INVALID (NUMBER OTHER THAN 1-7
         else {
              cout << "\n Invalid choice. Please enter a number (1-7) \n" << endl;
         }
@@ -256,9 +266,11 @@ string createAttendanceSheet(string &termName) {
 
     cout << "\nSheet structure created successfully and saved to '" << sheetName << ".csv'.\n"; // Indicate create attendance sheet successfully
 
-
+    // Open the term file in append mode (add content without overwriting)
     outputFile.open(termName, ios::app);
     if (outputFile.is_open()) {
+
+        // Write the attendance sheet name into the term file
         outputFile << sheetName << ".csv\n";
         outputFile.close(); // Close it again when done
     } else {
@@ -434,12 +446,12 @@ void viewCSV(string fileName)
     }
 }
 
-void deleteRow(string fileName) // update
+void deleteRow(string fileName) // delete row
 {
     while (true)
     {
-        ifstream inputFile(fileName);
-        vector<string> allLines;
+        ifstream inputFile(fileName); //Open and read the file
+        vector<string> allLines;// Create a vector for storing file text
         string line;
 
         while (getline(inputFile, line))//Read all lines from file
@@ -457,8 +469,9 @@ void deleteRow(string fileName) // update
         cout << "\nEnter StudentID to delete: ";
         getline(cin, studentIDToDelete);
 
-        int rowIndexToDelete = -1;
+        int rowIndexToDelete = -1; // Store index of row to delete
 
+        // Start searching from row index 2 (skip title and header rows)
         for (int i = 2; i < allLines.size(); i++)//Search for student id
         {
             string currentRow = allLines[i];
@@ -470,20 +483,22 @@ void deleteRow(string fileName) // update
                 int commaPos = tempRow.find(",");
                 string value = (commaPos != -1) ? tempRow.substr(0, commaPos) : tempRow;
 
-                while (!value.empty() && value[0] == ' ')//Delete unwanted space in front
+                while (!value.empty() && value[0] == ' ')// Remove leading spaces (front)
                 {
                     value = value.substr(1);
                 }
-                while (!value.empty() && value[value.length()-1] == ' ')//Delete unwanted space at back
+                while (!value.empty() && value[value.length()-1] == ' ')//// Remove trailing spaces(back)
                 {
                     value = value.substr(0, value.length()-1);
                 }
 
+                 // Store cleaned value into row data
                 rowData.push_back(value);
                 tempRow = (commaPos != -1) ? tempRow.substr(commaPos + 1) : "";
             }
 
             bool found = false;//Check if student id exists
+             // Check each column in the row
             for (int j = 0; j < rowData.size(); j++)
             {
                 if (rowData[j] == studentIDToDelete)
@@ -493,6 +508,7 @@ void deleteRow(string fileName) // update
                 }
             }
 
+             // If Student ID found, store row index and stop searching
             if (found)
             {
                 rowIndexToDelete = i;
@@ -528,15 +544,17 @@ void updateRow(string fileName) {
     cout << "Update Attendance Row\n";
     cout << "-------------------------------------------\n";
 
-    ifstream inputFile(fileName);
-    vector<string> allLines;
+    ifstream inputFile(fileName);// Open CSV file for reading
+    vector<string> allLines; // Store all lines from the file
     string line;
 
+    // Read entire file into vector
     while (getline(inputFile, line)) {
         allLines.push_back(line);
     }
     inputFile.close();
 
+     // Check if there are no data rows (only header)
     if (allLines.size() <= 2) {
         cout << "\nNo data rows to update.\n" << endl;
         return;
@@ -546,22 +564,27 @@ void updateRow(string fileName) {
     cout << "Enter StudentID to update: ";
     getline(cin, studentID);
 
-    bool found = false;
-    int rowIndex = -1;
-    vector<string> rowData;
+    bool found = false;// Flag to check if student exists
+    int rowIndex = -1; // Store row index of the student
+    vector<string> rowData; // Store student row data
 
+    // Search for the student starting from data rows
     for (int i = 2; i < allLines.size(); i++) {
         string currentRow = allLines[i];
         vector<string> tempData;
 
+        // Split row into columns by comma
         string tempRow = currentRow;
         while (!tempRow.empty()) {
             int commaPos = tempRow.find(",");
             string value = (commaPos != -1) ? tempRow.substr(0, commaPos) : tempRow;
 
+            // Remove leading spaces
             while (!value.empty() && value[0] == ' ') {
                 value = value.substr(1);
             }
+
+            // Remove trailing spaces
             while (!value.empty() && value[value.length()-1] == ' ') {
                 value = value.substr(0, value.length()-1);
             }
@@ -569,7 +592,7 @@ void updateRow(string fileName) {
             tempData.push_back(value);
             tempRow = (commaPos != -1) ? tempRow.substr(commaPos + 1) : "";
         }
-
+        // Check if first column matches Student ID
         if (tempData.size() > 0 && tempData[0] == studentID) {
             found = true;
             rowIndex = i;
@@ -577,20 +600,22 @@ void updateRow(string fileName) {
             break;
         }
     }
-
+     // If Student ID not found
     if (!found) {
         cout << "\nStudent ID '" << studentID << "' not found.\n" << endl;
         return;
     }
-
+    // Read header row to get column names
     string header = allLines[0];
     vector<string> columnNames;
 
+    // Split header into column names
     string tempHeader = header;
     while (!tempHeader.empty()) {
         int commaPos = tempHeader.find(",");
         string colName = (commaPos != -1) ? tempHeader.substr(0, commaPos) : tempHeader;
 
+        // Trim spaces
         while (!colName.empty() && colName[0] == ' ') {
             colName = colName.substr(1);
         }
@@ -601,7 +626,7 @@ void updateRow(string fileName) {
         columnNames.push_back(colName);
         tempHeader = (commaPos != -1) ? tempHeader.substr(commaPos + 1) : "";
     }
-
+    // Find index of STATUS column
     int statusColumnIndex = -1;
     for (int i = 0; i < columnNames.size(); i++) {
         string upperName = columnNames[i];
@@ -611,12 +636,12 @@ void updateRow(string fileName) {
             break;
         }
     }
-
+     // If STATUS column does not exist
     if (statusColumnIndex == -1) {
         cout << "\nERROR: No STATUS column found in this file.\n";
         return;
     }
-
+    // Get current status value
     string currentStatus = "";
     if (statusColumnIndex < rowData.size()) {
         currentStatus = rowData[statusColumnIndex];
@@ -626,21 +651,23 @@ void updateRow(string fileName) {
     cout << "Enter new status (0 for Absent, 1 for Present): ";
     getline(cin, newStatus);
 
+    // Validate status input
     if (newStatus != "0" && newStatus != "1") {
         cout << "Error: Status must be 0 (Absent) or 1 (Present).\n";
         return;
     }
-
+    // Update status value
     rowData[statusColumnIndex] = newStatus;
-
+    // Rebuild updated CSV row
     string updatedRow;
     for (int i = 0; i < rowData.size(); i++) {
         updatedRow += rowData[i];
         if (i != rowData.size() - 1) updatedRow += ",";
     }
-
+    // Replace old row with updated row
     allLines[rowIndex] = updatedRow;
 
+    // Write all data back to the CSV file
     ofstream outputFile(fileName);
     for (int i = 0; i < allLines.size(); i++) {
         outputFile << allLines[i];
@@ -651,6 +678,7 @@ void updateRow(string fileName) {
     cout << "\nRow updated successfully.\n" << endl;
     cout << "Updated Sheet:\n";
 
+    // Display updated CSV content
     ifstream displayFile(fileName);
     getline(displayFile, line);
     cout << line << endl;
@@ -665,10 +693,12 @@ void updateRow(string fileName) {
 
 // count current rows
 void countRows(string fileName) {
+    // Open CSV file for reading
     ifstream inputFile(fileName);
     string line;
     int rowCount = 0;
 
+    // Check if file opened successfully
     if (inputFile) {
         // skip the first two lines (header & column types)
         getline(inputFile, line);
