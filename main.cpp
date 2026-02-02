@@ -10,10 +10,10 @@
 // Member_4: 252UC242JW | YAP LI XUAN | yap.li.xuan1@student.mmu.edu.my | 0126371496
 // *********************************************************
 // Task Distribution
-// Member_1: viewCSV
-// Member_2: createAttendanceSheet
-// Member_3: flowchart and menu
-// Member_4: insertData
+// Member_1: viewCSV,deleteRow
+// Member_2: createAttendanceSheet,updateRow
+// Member_3: flowchart and menu, countRows
+// Member_4: insertData, create a school term and view its name, read,display, and write to a file.
 // *********************************************************
 
 #include <fstream>
