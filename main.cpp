@@ -80,10 +80,29 @@ int main() {
     }
     else {
         // Ask user which attendance sheet to open
-        cout << "Which file would you like to open?\n";
-        getline(cin, sheetName);
-        fileName = sheetName + "_" + termName + ".csv";
-        viewCSV(fileName);
+       while (true) {
+            cout << "Which attendance sheet would you like to open? \n";
+            getline(cin, sheetName);
+
+            fileName = sheetName + "_" + termName + ".csv";
+
+            // Try to open the file to check if it exists
+            file.open(fileName);
+
+            if (file.is_open()) {
+                // Success! The file exists.
+                cout << "Opening " << fileName << "...\n";
+                file.close(); // Close the file
+
+                // Show the CSV content
+                viewCSV(fileName);
+
+                break; // Exit the loop
+            } else {
+                // Failure. The file doesn't exist and loop again
+                cout << "Error: '" << sheetName << "' does not exist. Please try again.\n\n";
+            }
+        }
     }
 
     cout << "---------------------------------\n\n";
