@@ -13,7 +13,7 @@
 // Member_1: viewCSV,deleteRow
 // Member_2: createAttendanceSheet,updateRow
 // Member_3: flowchart and menu, countRows
-// Member_4: insertData, create a school term and view its name, read,display, and write to a file.
+// Member_4: insertData, create a school term and view its name
 // *********************************************************
 
 #include <fstream>
@@ -45,6 +45,13 @@ int main() {
    // Ask user to enter the term name
     cout << "Enter term name: ";
     getline(cin,termName);
+
+    // Keep asking until non-empty name
+    while (termName.empty()) {
+        cout << "Term Name cannot be blank.\n";
+        cout << "Enter term name: ";
+        getline(cin, termName);
+    }
 
     // Try to open the term file
     file.open(termName);
@@ -196,6 +203,11 @@ string createAttendanceSheet(string &termName) {
     while (true) {
         cout << "Enter attendance sheet name: ";
         getline(cin, sheetName);
+
+        if (sheetName.empty()) {
+        cout << "Error: The sheet name cannot be blank. Please try again.\n";
+        continue; // Skip the rest of the loop and ask again
+    }
 
         string filepath = sheetName + "_" + termName + ".csv";
         // Check if file exists
